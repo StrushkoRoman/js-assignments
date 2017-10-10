@@ -22,6 +22,7 @@
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
 function parseDataFromRfc2822(value) {
+    return new Date(value);
    throw new Error('Not implemented');
 }
 
@@ -37,6 +38,7 @@ function parseDataFromRfc2822(value) {
  *    '2016-01-19T08:07:37Z' => Date()
  */
 function parseDataFromIso8601(value) {
+    return new Date(value);
    throw new Error('Not implemented');
 }
 
@@ -56,6 +58,17 @@ function parseDataFromIso8601(value) {
  *    Date(2015,1,1)    => false
  */
 function isLeapYear(date) {
+    var yer= new Date(date);
+    var kyer=yer.getFullYear();
+    if (kyer%4==0 && kyer%100!=0 || kyer%400==0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
    throw new Error('Not implemented');
 }
 
@@ -76,7 +89,10 @@ function isLeapYear(date) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
 function timeSpanToString(startDate, endDate) {
-   throw new Error('Not implemented');
+    var newdate = new Date(endDate-startDate);
+    var answer = newdate.toISOString();
+    return answer.slice(11,-1);
+ throw new Error('Not implemented');
 }
 
 
@@ -94,6 +110,11 @@ function timeSpanToString(startDate, endDate) {
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
 function angleBetweenClockHands(date) {
+   // var dat= new Date(date);
+    var hou= date.getUTCHours() > 12 ? date.getUTCHours() -12 : date.getUTCHours();
+    var min=date.getMinutes();
+    var clk= Math.abs(60*hou - 11*min)/2;
+    return Math.min(clk, 360-clk)*Math.PI/180;
     throw new Error('Not implemented');
 }
 

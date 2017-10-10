@@ -30,7 +30,19 @@
  *
  */
 function getFizzBuzz(num) {
-    throw new Error('Not implemented');
+    if (num%3==0 && num%5==0)
+        return 'FizzBuzz';
+
+    else if(num%3==0)
+        return 'Fizz';
+
+    else if (num%5==0)
+        return 'Buzz';
+
+    else
+        return num;
+
+        throw new Error('Not implemented');
 }
 
 
@@ -46,6 +58,7 @@ function getFizzBuzz(num) {
  *   10 => 3628800
  */
 function getFactorial(n) {
+    return (n != 1) ? n * getFactorial(n - 1) : 1;
     throw new Error('Not implemented');
 }
 
@@ -63,6 +76,12 @@ function getFactorial(n) {
  *   -1,1  =>  0  ( = -1 + 0 + 1 )
  */
 function getSumBetweenNumbers(n1, n2) {
+    var sum=0;
+    for(n1;n1<n2+1;n1++)
+    {
+        sum+=n1;
+    }
+    return sum;
     throw new Error('Not implemented');
 }
 
@@ -82,6 +101,10 @@ function getSumBetweenNumbers(n1, n2) {
  *   10,10,10 =>  true
  */
 function isTriangle(a,b,c) {
+    if(a<b+c && b<c+a && c<a+b)
+        return true;
+    else
+        return false;
     throw new Error('Not implemented');
 }
 
@@ -192,6 +215,25 @@ function findFirstSingleChar(str) {
  *
  */
 function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+    var fst, lst;
+    if (isStartIncluded==true)
+    {
+        fst='[';
+    }
+    else if (isStartIncluded==false)
+    {
+        fst='(';
+    }
+    if (isEndIncluded==true)
+    {
+        fst=']';
+    }
+    else if (isEndIncluded==false)
+    {
+        fst=')';
+    }
+
+    return fst+a+','+b+lst;
     throw new Error('Not implemented');
 }
 
