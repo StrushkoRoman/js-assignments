@@ -142,6 +142,12 @@ function isTriangle(a,b,c) {
  *  
  */
 function doRectanglesOverlap(rect1, rect2) {
+    if ((rect1.left > (rect2.left + rect2.width)) || (rect2.left > (rect1.left + rect1.width)))
+        return false;
+
+    if ((rect1.top > (rect2.top + rect2.height)) || (rect2.top > (rect1.top + rect1.height)))
+        return false;
+    return true;
     throw new Error('Not implemented');
 }
 
@@ -173,6 +179,9 @@ function doRectanglesOverlap(rect1, rect2) {
  *   
  */
 function isInsideCircle(circle, point) {
+    var x = Math.abs(point.x - circle.center.x);
+    var y = Math.abs(point.y - circle.center.y);
+    return Math.sqrt((x*x + y*y)) < circle.radius;
     throw new Error('Not implemented');
 }
 
@@ -189,6 +198,13 @@ function isInsideCircle(circle, point) {
  *   'entente' => null
  */
 function findFirstSingleChar(str) {
+    for (var i = 0; i < str.length; i++) {
+        var c = str.charAt(i);
+        if (str.indexOf(c) === i && str.indexOf(c, i + 1) === -1) {
+            return c;
+        }
+    }
+    return null;
     throw new Error('Not implemented');
 }
 
@@ -215,25 +231,14 @@ function findFirstSingleChar(str) {
  *
  */
 function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
-    var fst, lst;
-    if (isStartIncluded==true)
-    {
-        fst='[';
-    }
-    else if (isStartIncluded==false)
-    {
-        fst='(';
-    }
-    if (isEndIncluded==true)
-    {
-        fst=']';
-    }
-    else if (isEndIncluded==false)
-    {
-        fst=')';
-    }
+    var rez = "";
+    rez += isStartIncluded ? '[' : '(';
+    rez += a>b ? b : a;
+    rez += ", ";
+    rez += a<b ? b : a;
+    rez += isEndIncluded ? ']' : ')';
 
-    return fst+a+','+b+lst;
+    return rez;
     throw new Error('Not implemented');
 }
 
@@ -251,7 +256,7 @@ function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
  * 'noon' => 'noon'
  */
 function reverseString(str) {
-    throw new Error('Not implemented');
+    return str.split("").reverse().join("");
 }
 
 
@@ -268,7 +273,7 @@ function reverseString(str) {
  *   34143 => 34143
  */
 function reverseInteger(num) {
-    throw new Error('Not implemented');
+    return num.toString().split("").reverse().join("");
 }
 
 
@@ -293,7 +298,14 @@ function reverseInteger(num) {
  *   4916123456789012 => false
  */
 function isCreditCardNumber(ccn) {
-    throw new Error('Not implemented');
+    var sum = 0;
+    var str = ccn.toString();
+    for(var i = 0; i < str.length; i++) {
+        var add = (Number.parseInt(str[i])) * (2 - (i + str.length) % 2);
+        add -= add > 9 ? 9 : 0;
+        sum += add;
+    }
+    return sum % 10 == 0;
 }
 
 
@@ -312,7 +324,14 @@ function isCreditCardNumber(ccn) {
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
 function getDigitalRoot(num) {
-    throw new Error('Not implemented');
+    do {
+        var str = num.toString();
+        num = 0;
+        for (var i = 0; i < str.length; i++) {
+            num += Number.parseInt(str[i]);
+        }
+    }while(num > 9);
+    return num;
 }
 
 
@@ -335,10 +354,46 @@ function getDigitalRoot(num) {
  *   '[[][][[]]]' => true
  *   '[[][]][' => false
  *   '{)' = false
- *   '{[(<{[]}>)]}' = true 
+ *   '{[(<{[]}>)]}' = true
  */
 function isBracketsBalanced(str) {
-    throw new Error('Not implemented');
+    var i, ch;
+
+    var bracketsMap = new Map();
+    bracketsMap.set(']', '[');
+    bracketsMap.set('}', '{');
+    bracketsMap.set(')', '(');
+    bracketsMap.set('>', '<');
+
+    var closingBrackets = [...bracketsMap.keys()];
+    var openingBrackets = [...bracketsMap.values()];
+
+    var temp = [];
+    var len = str.length;
+
+    for (i = 0; i < len; i++) {
+        ch = str[i];
+
+        //кладем в стек скобку если открывающаяся
+        if (openingBrackets.indexOf(ch) > -1) {
+            temp.push(ch);
+            //если скобка закрываюшаяся, то проверяем является ли она парной
+            //для предыдущей открывающей
+            //если нет то ошибка
+        } else if (closingBrackets.indexOf(ch) > -1) {
+
+            var expectedBracket = bracketsMap.get(ch);
+            if (temp.length === 0 || (temp.pop() !== expectedBracket)) {
+                return false;
+            }
+
+        } else {
+            continue;
+        }
+    }
+
+    //последовательность скобочная если для каждой скобки нашлась пара, значит стек дубет пуст
+    return (temp.length === 0);
 }
 
 
@@ -374,7 +429,60 @@ function isBracketsBalanced(str) {
  *
  */
 function timespanToHumanString(startDate, endDate) {
-    throw new Error('Not implemented');
+
+    var date = Math.abs(startDate.getTime() - endDate.getTime());
+    switch(true)
+    {
+        case date <= 1000*45:
+        {
+            return 'a few seconds ago';
+        }
+        case date <= 1000*90:
+        {
+            return 'a minute ago';
+        }
+        case date <= 1000*60*45:
+        {
+            var minuteAgo = Math.round((date - 1) / (1000 * 60));
+            return `${minuteAgo} minutes ago`;
+        }
+        case date <= 1000*60*90:
+        {
+            return 'an hour ago';
+        }
+        case date <= 1000*60*60*22:
+        {
+            var hourAgo = Math.round((date - 1) / (1000 * 60 * 60));
+            return `${hourAgo} hours ago`;
+        }
+        case date <= 1000*60*60*36:
+        {
+            return 'a day ago';
+        }
+        case date <= 1000*60*60*24*25:
+        {
+            var dayAgo = Math.round((date - 1) / (1000 * 60 * 60*24));
+            return `${dayAgo} days ago`;
+        }
+        case date <= 1000*60*60*24*45:
+        {
+            return 'a month ago';
+        }
+        case date <= 1000*60*60*24*345:
+        {
+            var monthAgo = Math.round((date - 1) / (1000 * 60 * 60*24*30));
+            return `${monthAgo} months ago`;
+        }
+        case date <= 1000*60*60*24*545:
+        {
+            return `a year ago`;
+        }
+        case date > 1000*60*60*24*545:
+        {
+            var yearAgo = Math.round((date - 1) / (1000 * 60 * 60*24*365));
+            return `${yearAgo} years ago`;
+        }
+    }
 }
 
 
@@ -398,7 +506,13 @@ function timespanToHumanString(startDate, endDate) {
  *    365, 10 => '365'
  */
 function toNaryString(num, n) {
-    throw new Error('Not implemented');
+    let rez = "";
+    do
+    {
+        rez += (num % n).toString();
+    }
+    while(num = Math.floor(num/n));
+    return rez.split("").reverse().join("");
 }
 
 
@@ -415,7 +529,22 @@ function toNaryString(num, n) {
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
 function getCommonDirectoryPath(pathes) {
-    throw new Error('Not implemented');
+    //идея:
+    //берем первую строку и режим по токенам
+    //далее в цикле берем сл. строку и проверяем равны ли токены
+    //как только один токен не равен, убираем все токены с несовпавшего до конца
+    var rezTokens = pathes[0].split('/');
+    for(var i=1,count;i < pathes.length;i++) {
+        var tempTokens = pathes[i].split('/');
+        for (count = 0; count < tempTokens.length; count++) {
+            if(rezTokens[count] !== tempTokens[count])
+                break;
+        }
+        rezTokens = rezTokens.slice(0,count);
+    }
+    if(rezTokens.length === 0)
+        return "";
+    return rezTokens.join('/')+'/';
 }
 
 
@@ -438,7 +567,19 @@ function getCommonDirectoryPath(pathes) {
  *
  */
 function getMatrixProduct(m1, m2) {
-    throw new Error('Not implemented');
+    var aNumRows = m1.length, aNumCols = m1[0].length,
+        bNumRows = m2.length, bNumCols = m2[0].length,
+        m = new Array(aNumRows);  // initialize array of rows
+    for (var r = 0; r < aNumRows; ++r) {
+        m[r] = new Array(bNumCols); // initialize the current row
+        for (var c = 0; c < bNumCols; ++c) {
+            m[r][c] = 0;             // initialize the current cell
+            for (var i = 0; i < aNumCols; ++i) {
+                m[r][c] += m1[r][i] * m2[i][c];
+            }
+        }
+    }
+    return m;
 }
 
 
@@ -473,6 +614,7 @@ function getMatrixProduct(m1, m2) {
  *
  */
 function evaluateTicTacToePosition(position) {
+
     throw new Error('Not implemented');
 }
 
