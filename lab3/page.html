@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" type="text/css" href="page.css">
+	<meta charset="UTF-8">
+	<title>Test</title>
+	<style>
+		h1 {
+			font: 250% Helvetica;
+		}
+		h3 {
+			font: 130% Helvetica;
+		}
+	</style>
+</head>
+<body>
+	<header></header>
+		<div class="mainclass">
+			<div class="freespace"></div>
+			<div class="main">
+				<h1>Password request form</h1>
+				<p>После загрузки файлов и отправки формы данные, связанные с Вашим аккаунтом Google (имя и фотография), будут записаны. Вы не testadress@gmail.com? <a href="#">Сменить аккаунт</a></br></p>
+				<p class="red">*Обязательно</p>
+				<div class="name">
+					<h3>Please fill your name<span class="red">*</span></h3>
+					<input type="text" class="first" placeholder="Мой ответ">
+				</div>
+
+				<div class="type-color">
+					<h3>What color you like</h3>
+					<input type="radio" name="radAnswer">Red<Br>
+					<input type="radio" name="radAnswer">Green<Br>
+					<input type="radio" name="radAnswer">Blue<Br>
+					<input type="radio" name="radAnswer">Black<Br>
+					<input type="radio" name="radAnswer">White<Br>
+					<input type="radio" name="radAnswer">Другое: <input type="text" class="first" >
+				</div>
+
+				<div class="town-like">
+					<h3>What town you like more?<span class="red">*</span></h3>
+					<select name="" id="" size="1">
+						<option disabled selected value=>Выбрать</option>
+						<option value="Brest">Brest</option>
+						<option value="Minsk">Minsk</option>
+						<option value="Grodno">Grodno</option>
+						<option value="Gomel">Gomel</option>
+						<option value="Mogilev">Mogilev</option>
+						<option value="Vitebsk">Vitebsk</option>
+						</select>
+				</div>
+
+				<div class="progr-language">
+					<h3>Please describe (at least 50 symbols on symbols) your favorite programming language<span class="red">*</span></h3>
+					<input type="text" class="first" placeholder="Мой ответ" style="width: 60%">
+				</div>
+
+				<div class="years-education">
+					<h3>What years of education did you really like<span class="red">*</span></h3>
+					<input type="checkbox">First<Br>
+					<input type="checkbox">Second<Br>
+					<input type="checkbox">Third<Br>
+					<input type="checkbox">Fourth<Br>
+				</div>
+
+				<div class="send-image">
+					<h3>Please send any image<span class="red">*</span></h3>
+					<label for="upload-photo">ДОБАВИТЬ ФАЙЛ</label>
+					<input type="file" name="photo" id="upload-photo" />
+				</div>
+
+				<div class="set-last">
+					<h3>Set last Monday Monday<span class="red">*</span></h3>
+					<input type="date" class="date"  min="2017-01-01" max="2017-12-31">
+				</div>
+
+				<button id="button" href="#">Отправить</button>
+
+				<p id="clr">Никогда не используйте формы Google для передачи паролей.</p>
+			</div>
+		</div>
+		<footer>
+			<p>Компания Google не имеет никакого отношения к этому контенту. Сообщение о нарушении - Условия использования - Дополнительные условия</p>
+			<h2 class="google">Google формы</h2>
+		</footer>
+
+</body>
+</html>
