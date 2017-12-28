@@ -34,7 +34,44 @@
  *
  */
 function parseBankAccount(bankAccount) {
-    throw new Error('Not implemented');
+    let arr = bankAccount.split('\n');
+    let accNum = 0;
+    let numOfDigits = 9;
+    for (let k = 0; k < numOfDigits; k++) {
+        let digit;
+        let i = k * 3;
+        if(arr[2][i + 2] === ' ') {
+            digit = 2;
+        } else if(arr[1][i + 2] === ' ') {
+            if (arr[2][i] === ' ') {
+                digit = 5;
+            } else {
+                digit = 6;
+            }
+        }  else if(arr[2][i] === '|') {
+            if (arr[1][i + 1] === ' ') {
+                digit = 0;
+            } else {
+                digit = 8;
+            }
+        } else if(arr[0][i + 1] === ' ') {
+            if (arr[1][i + 1] === ' ') {
+                digit = 1;
+            } else {
+                digit = 4;
+            }
+        } else if(arr[1][i + 1] === '_') {
+            if (arr[1][i] === '|') {
+                digit = 9;
+            } else {
+                digit = 3;
+            }
+        } else {
+            digit = 7;
+        }
+        accNum += digit * Math.pow(10, numOfDigits - k - 1);
+    }
+    return accNum;
 }
 
 
@@ -63,9 +100,16 @@ function parseBankAccount(bankAccount) {
  *                                                                                                'characters.'
  */
 function* wrapText(text, columns) {
-    throw new Error('Not implemented');
+    while (text.length) {
+        let count = columns;
+        if (text.length > count) {
+            while (text[count] != " ")
+                count--;
+        }
+        yield text.substr(0, count);
+        text = text.substr(count + 1);
+    }
 }
-
 
 /**
  * Returns the rank of the specified poker hand.
@@ -98,11 +142,79 @@ const PokerRank = {
     OnePair: 1,
     HighCard: 0
 }
-
-function getPokerHandRank(hand) {
-    throw new Error('Not implemented');
+function compareCards(hand) {
+    let cardMap = new Map(), result = "";
+    hand.forEach(value => {
+        let prev = cardMap.get(value.dig);
+    cardMap.set(value.dig, prev == undefined ? 1 : prev + 1);
+});
+    cardMap.forEach(value => {
+        if (value > 1)
+    result += value;
+});
+    return result;
 }
+function isStraight(hand) {
+    let lowest = Math.min.apply(null, hand.map(value => value.dig));
 
+    return hand.reduce((prev, curr, index) => {
+            return prev && (curr.dig - lowest == index);
+}, true);
+}
+function isAceStraight(hand) {
+    hand = hand.map((value) => value.dig == 14 ? 1 : value.dig).sort();
+    let lowest = Math.min.apply(null, hand);
+
+    return hand.reduce((prev, curr, index) => {
+            return prev && (curr - lowest == index);
+}, true);
+}
+function isFlush(hand) {
+    hand = hand.map((value) => value.mask);
+
+    return (hand[0] == (hand[1] | hand[2] | hand[3] | hand[4]));
+}
+function getPokerHandRank(hand) {
+    hand = hand
+        .map(value => {
+        let sec = value.length == 2 ? 1 : 2,
+        dig = value.substr(0, sec),
+        masks = new Map([["♠", 1], ["♣", 2], ["♥", 4], ["♦", 8]]),
+        cards = new Map([["J", 11], ["Q", 12], ["K", 13], ["A", 14]]);
+    if (cards.has(dig))
+        dig = cards.get(dig);
+    return {dig: Number(dig), mask: masks.get(value.substr(sec))};
+})
+.sort((a, b) => a.dig - b.dig);
+    let rank = 0;
+    switch (compareCards(hand)) {
+        case "4":
+            rank = PokerRank.FourOfKind;
+            break;
+        case "23":
+        case "32":
+            rank = PokerRank.FullHouse;
+            break;
+        case "22":
+            rank = PokerRank.TwoPairs;
+            break;
+        case "3":
+            rank = PokerRank.ThreeOfKind;
+            break;
+        case "2":
+            rank = PokerRank.OnePair;
+            break;
+        default:
+            if (isStraight(hand) || isAceStraight(hand))
+                rank = PokerRank.Straight;
+    }
+    if (isFlush(hand))
+        if (rank == 0)
+            rank = PokerRank.Flush;
+        else
+            rank = PokerRank.StraightFlush;
+    return rank;
+}
 
 /**
  * Returns the rectangles sequence of specified figure.
@@ -110,10 +222,10 @@ function getPokerHandRank(hand) {
  * The task is to break the figure in the rectangles it is made of.
  *
  * NOTE: The order of rectanles does not matter.
- * 
+ *
  * @param {string} figure
  * @return {Iterable.<string>} decomposition to basic parts
- * 
+ *
  * @example
  *
  *    '+------------+\n'+
@@ -135,8 +247,77 @@ function getPokerHandRank(hand) {
  *    '+-------------+\n'
  */
 function* getFigureRectangles(figure) {
-   throw new Error('Not implemented');
+    const array = figure.split('\n');
+    const pluses = [];
+    const horizontalLines = [];
+    const rectangles = [];
+    for (let i = 0; i < array.length; i++)
+        for (let j = 0; j < array[0].length; j++)
+            if (array[i][j] === '+') {
+                pluses.push({x: j, y: i});
+            }
+    for (let i = 0; i < pluses.length; i++)
+        for (let j = i + 1; j < pluses.length; j++)
+            if (pluses[i].y === pluses[j].y) {
+                if (checkHorizontalLine(array, pluses[i], pluses[j]))
+                    horizontalLines.push([pluses[i], pluses[j]]);
+            }
+    for (let i = 0; i < horizontalLines.length; i++)
+        for (let j = i + 1; j < horizontalLines.length; j++)
+            if (checkRectangle(array, horizontalLines[i], horizontalLines[j])) {
+                rectangles.push([horizontalLines[i], horizontalLines[j]]);
+            }
+    for (let i = 0; i < rectangles.length; i++) {
+        let rectangle = drawRectangle(rectangles[i]);
+        yield rectangle;
+    }
 }
+function checkHorizontalLine(array, s, f) {
+    for (let i = s.x; i <= f.y; i++)
+        if (array[s.y][i] !== '-' && array[s.y][i] !== '+')
+            return false;
+    return true;
+}
+function checkRectangle(array, top, bottom) {
+    if (top[0].x !== bottom[0].x)
+        return false;
+    if (top[1].x !== bottom[1].x)
+        return false;
+    const leftX = top[0].x,
+        rightX = top[1].x,
+        topY = top[0].y,
+        bottomY = bottom[0].y;
+    for (let j = leftX + 1; j < rightX; j++)
+        if (array[topY][j] === '+' && array[bottomY][j] === '+') {
+            let hasWhiteSpace = false;
+            for (let i = topY + 1; i < bottomY; i++)
+                if (array[i][j] === ' ')
+                    hasWhiteSpace = true;
+            if (!hasWhiteSpace)
+                return false;
+        }
+    for (let i = topY + 1; i < bottomY; i++) {
+        if (array[i][leftX] !== '|' && array[i][leftX] !== '+')
+            return false;
+        if (array[i][rightX] !== '|' && array[i][rightX] !== '+')
+            return false;
+        for (let j = leftX + 1; j < rightX; j++)
+            if (array[i][j] !== ' ')
+                return false;
+    }
+    return true;
+}
+function drawRectangle(item) {
+    let width = item[0][1].x - item[0][0].x + 1,
+        height = item[1][0].y - item[0][0].y + 1,
+        result = '',
+        topLine = '+' + ('-').repeat(width - 2) + '+' + '\n';
+    result += topLine;
+    result += ( '|' + (' ').repeat(width - 2) + '|' + '\n' ).repeat(height - 2);
+    result += topLine;
+    return result;
+}
+
 
 
 module.exports = {

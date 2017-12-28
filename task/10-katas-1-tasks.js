@@ -17,10 +17,53 @@
  *  ]
  */
 function createCompassPoints() {
-    throw new Error('Not implemented');
-    var sides = ['N','E','S','W'];  // use array of cardinal directions only!
-}
+    var sides = ['N', 'E', 'S', 'W'];  // use array of cardinal directions only!
 
+    const result = [];
+    let azimuthCounter = 0;
+    let addCompassPoint = function (currCardinalDirection, nextCardinalDirection) {
+        for (let position = 0; position < 8; position++) {
+            let abbreviation;
+            let cardinalDirectionsInSpecialOrder =
+                (currCardinalDirection === sides[0] || currCardinalDirection === sides[2]) ?
+                currCardinalDirection + nextCardinalDirection : nextCardinalDirection + currCardinalDirection;
+            switch (position) {
+                case 0:
+                    abbreviation = currCardinalDirection;
+                    break;
+                case 1:
+                    abbreviation = currCardinalDirection + 'b' + nextCardinalDirection;
+                    break;
+                case 2:
+                    abbreviation = currCardinalDirection + cardinalDirectionsInSpecialOrder;
+                    break;
+                case 3:
+                    abbreviation = cardinalDirectionsInSpecialOrder + 'b' + currCardinalDirection;
+                    break;
+                case 4:
+                    abbreviation = cardinalDirectionsInSpecialOrder;
+                    break;
+                case 5:
+                    abbreviation = cardinalDirectionsInSpecialOrder + 'b' + nextCardinalDirection;
+                    break;
+                case 6:
+                    abbreviation = nextCardinalDirection + cardinalDirectionsInSpecialOrder;
+                    break;
+                case 7:
+                    abbreviation = nextCardinalDirection + 'b' + currCardinalDirection;
+                    break;
+            }
+            let azimuth = azimuthCounter;
+            azimuthCounter += 11.25;
+            result.push({abbreviation: abbreviation, azimuth: azimuth});
+        }
+    };
+    addCompassPoint(sides[0], sides[1]);
+    addCompassPoint(sides[1], sides[2]);
+    addCompassPoint(sides[2], sides[3]);
+    addCompassPoint(sides[3], sides[0]);
+    return result;
+}
 
 /**
  * Expand the braces of the specified string.
@@ -56,9 +99,24 @@ function createCompassPoints() {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-    throw new Error('Not implemented');
+    const queue = [],
+        regex = new RegExp("\{([0-9a-zA-Z\.,]+)\}", 'i'),
+        itemSet = new Set;
+    queue.push(str);
+    while (queue.length) {
+        let item = queue.shift();
+        let matches = item.match(regex);
+        if (matches != null) {
+            let array = matches[1].split(',');
+            array.forEach(curr => {
+                queue.push(item.replace(matches[0], curr));
+        });
+        } else if (!itemSet.has(item)) {
+            itemSet.add(item);
+            yield item;
+        }
+    }
 }
-
 
 /**
  * Returns the ZigZag matrix
@@ -88,9 +146,27 @@ function* expandBraces(str) {
  *
  */
 function getZigZagMatrix(n) {
-    throw new Error('Not implemented');
-}
+    let matrix = new Array(n);
+    for (let k = 0; k < n; k++) {
+        matrix[k] = (new Array(n));
+    }
+    let i = 1, j = 1;
+    for (let m = 0; m < n * n; m++) {
+        matrix[i - 1][j - 1] = m;
+        if ((i + j) % 2 === 0) {
+            if (j < n) j++;
+            else i += 2;
 
+            if (i > 1) i--;
+        } else {
+            if (i < n) i++;
+            else j += 2;
+
+            if (j > 1) j--;
+        }
+    }
+    return matrix;
+}
 
 /**
  * Returns true if specified subset of dominoes can be placed in a row accroding to the game rules.
@@ -113,7 +189,27 @@ function getZigZagMatrix(n) {
  *
  */
 function canDominoesMakeRow(dominoes) {
-    throw new Error('Not implemented');
+    function dfs(current, value, left) {
+        if (left == 0) {
+            result = true;
+            return;
+        }
+        visited[current] = true;
+        for (let i = 0; i < dominoes.length; i++)
+            if (!visited[i]) {
+                if (dominoes[i].indexOf(value) != -1) {
+                    dfs(i, dominoes[i][0] == value ? dominoes[i][1] : dominoes[i][0], left - 1);
+                }
+            }
+        visited[current] = false;
+    }
+    let result = false,
+        visited = Array.from({length: dominoes.length}, () => false);
+    for (let i = 0; i < dominoes.length; i++) {
+        dfs(i, dominoes[i][0], dominoes.length - 1);
+        dfs(i, dominoes[i][1], dominoes.length - 1);
+    }
+    return result;
 }
 
 
@@ -137,7 +233,36 @@ function canDominoesMakeRow(dominoes) {
  * [ 1, 2, 4, 5]          => '1,2,4,5'
  */
 function extractRanges(nums) {
-    throw new Error('Not implemented');
+    let result = {
+            string: "",
+            add: (s) => {
+            if (result.string != "")
+    result.string += ",";
+    result.string += s;
+},
+    pack: (a, b) => {
+        if (a == b)
+            result.add(a);
+        else if (Math.abs(a - b) == 1)
+            result.add(`${a},${b}`);
+        else
+            result.add(`${a}-${b}`);
+    }
+};
+    let from = 0;
+    nums.sort((a, b)=> a - b);
+    if (nums.length == 1)
+        return nums[0];
+    for (let j = from + 1; j < nums.length; j++) {
+        if (nums[j] - nums[j - 1] != 1) {
+            result.pack(nums[from], nums[j - 1]);
+            from = j;
+        }
+        if (j == nums.length - 1) {
+            result.pack(nums[from], nums[j]);
+        }
+    }
+    return result.string;
 }
 
 module.exports = {
