@@ -1,0 +1,19 @@
+.Edit label {
+    margin: 15px 0 0 755px;
+}
+
+.Edit label {
+    display: flex;
+}
+
+.Edit textarea {
+    margin: 1% 0 0 7%;
+    
+}
+
+.Edit textarea {
+    width: 90%;
+    height: 29em;
+    border-radius: 5px;
+    padding: 10px;
+}

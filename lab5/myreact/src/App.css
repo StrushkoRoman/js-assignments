@@ -1,0 +1,32 @@
+.App {
+    width: 60%;
+    margin: 1%;
+    margin-right: auto;
+    display: flex;
+  }
+  .App-intro {
+    width: 100%;
+    display: flex;
+  }
+.Nickname {
+    font-size: 1.5em;
+    color: gray;
+    margin-bottom: 30px;
+}
+.Info{
+    margin-bottom: 15px;
+}
+.Contacts {
+    display: flex;
+}
+  
+.Icon {
+    width: 10%;
+ }
+  
+.Text {
+    width: 90%;
+}
+.Tabs{
+    height: 100%;
+}
