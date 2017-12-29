@@ -1,0 +1,15 @@
+.App {
+  text-align: center;
+  width: 60%;
+  margin: 1%;
+  margin-right: auto;
+  display: flex;
+}
+
+.App-header {
+  height: 150px;
+  padding: 20px;
+}
+
+.App-body {
+}
